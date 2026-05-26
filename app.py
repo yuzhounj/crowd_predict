@@ -98,7 +98,7 @@ def _find_reference_date(dt: date) -> date:
 def compute_features(
     attraction: str, dt: date, tp: str, temp: float, precip: float
 ) -> pd.DataFrame:
-    """为预测请求构造特征行。直接复用训练数据中已有的 past_7d_avg / lag 值。"""
+    """为预测请求构造特征行。直接复用训练数据中已有的 past_7d_avg。"""
     holiday_flag = is_holiday(dt)
     weekend_flag = dt.weekday() >= 5 and not holiday_flag
     vac_flag = (is_winter_vacation(dt) or is_summer_vacation(dt)) and not holiday_flag
@@ -112,12 +112,9 @@ def compute_features(
 
     if len(ref_row) > 0:
         past_7d = ref_row["past_7d_avg"].values[0]
-        lag1 = ref_row["lag_1"].values[0]
-        lag2 = ref_row["lag_2"].values[0]
     else:
-        # 兜底：取该景区+时点的均值
         fallback = full_df[(full_df["attraction"] == attraction) & (full_df["time_point"] == tp)]["visitors"].mean()
-        past_7d = lag1 = lag2 = fallback
+        past_7d = fallback
 
     row = {
         "attraction_encoded": meta["attraction_map"][attraction],
@@ -130,8 +127,6 @@ def compute_features(
         "is_holiday": int(holiday_flag),
         "is_vacation": int(vac_flag),
         "past_7d_avg": round(past_7d),
-        "lag_1": round(lag1),
-        "lag_2": round(lag2),
     }
     return pd.DataFrame([row])
 

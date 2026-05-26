@@ -25,21 +25,6 @@ def build_features(df: pd.DataFrame) -> pd.DataFrame:
     df["attraction_encoded"] = df["attraction"].map(attraction_map)
     df["time_point_encoded"] = df["time_point"].map(time_map)
 
-    # lag 特征：昨天和前天的同时点客流
-    lag_1, lag_2 = [], []
-    for _, row in df.iterrows():
-        d = row["date"]
-        a = row["attraction"]
-        tp = row["time_point"]
-        mask1 = (df["attraction"] == a) & (df["time_point"] == tp) & (df["date"] == d - timedelta(days=1))
-        mask2 = (df["attraction"] == a) & (df["time_point"] == tp) & (df["date"] == d - timedelta(days=2))
-        v1 = df[mask1]["visitors"].values
-        v2 = df[mask2]["visitors"].values
-        lag_1.append(v1[0] if len(v1) > 0 else row["visitors"])
-        lag_2.append(v2[0] if len(v2) > 0 else row["visitors"])
-
-    df["lag_1"] = lag_1
-    df["lag_2"] = lag_2
     return df
 
 
@@ -55,8 +40,6 @@ def get_feature_columns() -> list[str]:
         "is_holiday",
         "is_vacation",
         "past_7d_avg",
-        "lag_1",
-        "lag_2",
     ]
 
 
