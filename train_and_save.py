@@ -36,9 +36,9 @@ def train_and_save():
             pickle.dump(model, f)
         print(f"已保存: {filename}")
 
-    # 保存编码映射和全部数据（用于预测时查 lag 特征）
+    # 保存编码映射（与 loader.py build_features 保持一致）
     meta = {
-        "attraction_map": {a: i for i, a in enumerate(attractions)},
+        "attraction_map": {a: i for i, a in enumerate(sorted(df["attraction"].unique()))},
         "time_map": {"9:30": 0, "11:30": 1, "13:30": 2, "15:30": 3},
     }
     with open(f"{MODEL_DIR}/meta.pkl", "wb") as f:

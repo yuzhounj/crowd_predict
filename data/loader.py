@@ -19,9 +19,9 @@ def build_features(df: pd.DataFrame) -> pd.DataFrame:
     df["month"] = df["date"].dt.month
     df["day_of_week"] = df["date"].dt.dayofweek
 
-    # 景区和时点编码
-    attraction_map = {a: i for i, a in enumerate(df["attraction"].unique())}
-    time_map = {t: i for i, t in enumerate(df["time_point"].unique())}
+    # 景区和时点编码（固定顺序，与 train_and_save.py 中 meta 保持一致）
+    attraction_map = {a: i for i, a in enumerate(sorted(df["attraction"].unique()))}
+    time_map = {"9:30": 0, "11:30": 1, "13:30": 2, "15:30": 3}
     df["attraction_encoded"] = df["attraction"].map(attraction_map)
     df["time_point_encoded"] = df["time_point"].map(time_map)
 
